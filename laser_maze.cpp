@@ -146,13 +146,13 @@ int find_shortest_path(const maze_t& original_maze, const square_t& s, const squ
     to_visit.push({s, vector<moves_t>()});
 
     while (!to_visit.empty()) {
-	path_t curr_sq = to_visit.front();
+	path_t curr_path = to_visit.front();
 	to_visit.pop();
 
-	maze_t maze = get_curr_maze(mazes, curr_sq.second.size());
+	maze_t maze = get_curr_maze(mazes, curr_path.second.size());
 
-	int curr_x = curr_sq.first.first;
-	int curr_y = curr_sq.first.second;
+	int curr_x = curr_path.first.first;
+	int curr_y = curr_path.first.second;
 	
 	// ignore move if out of maze
 	if (curr_x < 0 || curr_x >= maze.size() ||
@@ -161,39 +161,39 @@ int find_shortest_path(const maze_t& original_maze, const square_t& s, const squ
 
 	// ignore move if blocked or dead
 	if (maze[curr_x][curr_y] != EMPTY &&
-	    (curr_sq.first != s || to_visit.size())) // skips check on starting point
+	    curr_path.second.size()) // skips check on starting point
 	    continue;
 	
 	// ignore move if state is already visited
-	if (visited.count({curr_sq.first, curr_sq.second.size()%mazes.size()}))
+	if (visited.count({curr_path.first, curr_path.second.size()%mazes.size()}))
 	    continue;
 
 	// set visited state
-	visited.insert({curr_sq.first, curr_sq.second.size()%mazes.size()});
+	visited.insert({curr_path.first, curr_path.second.size()%mazes.size()});
 
 	// found goal
-	if (curr_sq.first == g) {
+	if (curr_path.first == g) {
 	    if (DEBUG) {
-		print_path(original_maze, mazes, s, g, curr_sq.second);
+		print_path(original_maze, mazes, s, g, curr_path.second);
 	    }
 
-	    return curr_sq.second.size();
+	    return curr_path.second.size();
 	}
 
 	// visit neighbours
-	path_t move_up = {{curr_sq.first.first - 1, curr_sq.first.second}, curr_sq.second};
+	path_t move_up = {{curr_path.first.first - 1, curr_path.first.second}, curr_path.second};
 	move_up.second.push_back(MOVE_UP);
 	to_visit.push(move_up);
 	
-	path_t move_down = {{curr_sq.first.first + 1, curr_sq.first.second}, curr_sq.second};
+	path_t move_down = {{curr_path.first.first + 1, curr_path.first.second}, curr_path.second};
 	move_down.second.push_back(MOVE_DOWN);
 	to_visit.push(move_down);
 
-	path_t move_left = {{curr_sq.first.first, curr_sq.first.second - 1}, curr_sq.second};
+	path_t move_left = {{curr_path.first.first, curr_path.first.second - 1}, curr_path.second};
 	move_left.second.push_back(MOVE_LEFT);
 	to_visit.push(move_left);
 
-	path_t move_right = {{curr_sq.first.first, curr_sq.first.second + 1}, curr_sq.second};
+	path_t move_right = {{curr_path.first.first, curr_path.first.second + 1}, curr_path.second};
 	move_right.second.push_back(MOVE_RIGHT);
 	to_visit.push(move_right);
     }
